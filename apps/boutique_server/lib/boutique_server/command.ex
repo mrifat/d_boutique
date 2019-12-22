@@ -58,40 +58,40 @@ defmodule BoutiqueServer.Command do
   @doc """
   Runs the given command.
   """
-  @spec run({atom(), String.t()} | {atom(), String.t()}, term()) ::
+  @spec run({atom(), String.t()}) ::
           {:ok, String.t()} | {:error, :not_found}
-  def run(command), do: run(command, Registry)
+  def run(command)
 
-  def run({:create, bucket}, registry) do
-    Registry.create(registry, bucket)
+  def run({:create, bucket}) do
+    Registry.create(Registry, bucket)
     {:ok, "OK\r\n"}
   end
 
-  def run({:get, bucket, key}, registry) do
-    lookup(bucket, registry, fn pid ->
+  def run({:get, bucket, key}) do
+    lookup(bucket, fn pid ->
       value = Bucket.get(pid, key)
       {:ok, "#{value}\r\nOK\r\n"}
     end)
   end
 
-  def run({:put, bucket, key, value}, registry) do
-    lookup(bucket, registry, fn pid ->
+  def run({:put, bucket, key, value}) do
+    lookup(bucket, fn pid ->
       Bucket.put(pid, key, value)
       {:ok, "OK\r\n"}
     end)
   end
 
-  def run({:delete, bucket, key}, registry) do
-    lookup(bucket, registry, fn pid ->
+  def run({:delete, bucket, key}) do
+    lookup(bucket, fn pid ->
       Bucket.delete(pid, key)
       {:ok, "OK\r\n"}
     end)
   end
 
-  @spec lookup(String.t(), term(), (pid() -> {:ok, String.t()})) ::
+  @spec lookup(String.t(), (pid() -> {:ok, String.t()})) ::
           {:ok, String.t()} | {:error, :not_found}
-  defp lookup(bucket, registry, callback) do
-    case Router.route(bucket, Registry, :lookup, [registry, bucket]) do
+  defp lookup(bucket, callback) do
+    case Registry.lookup(Registry, bucket) do
       {:ok, pid} -> callback.(pid)
       _ -> {:error, :not_found}
     end
