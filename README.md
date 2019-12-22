@@ -80,9 +80,8 @@ $> mix deps.get
 $> mix test
 ```
 
-To run the distributed tests you need to make sure that you have separate nodes started, currently
-the cluster is not configurable and is divided into four nodes, each node is responsible for a range of data stores based on their
-table names, these nodes are divided as:
+To run the distributed tests you need to make sure that you have separate nodes started, each node is responsible for a range of data stores based on their
+bucket names, in the test environment the nodes are divided as:
 > a..g node
 >
 > h..n node
@@ -104,13 +103,14 @@ $> iex --sname h-n -S mix
 # start the third node
 $> iex --sname o-u -S mix
 
-# start the fourth node and run the tests
+# start the fourth node from the umbrella root to start the TCP server
+$> cd ../../
 $> iex --sname v-z -S mix test --only distributed
 ```
 If you want to run the project on different computers,
 make sure the computers are on the same network and have the same `~/.erlang.cookie` value.
 
-For more information check Erlang's [epmd](http://erlang.org/doc/man/epmd.html) for more information.
+Check Erlang's [epmd](http://erlang.org/doc/man/epmd.html) for more information.
 
 Running the project in a  cluster:
 ```shell
@@ -119,15 +119,12 @@ $> cd apps/boutique
 
 # start the first node
 $> iex --sname a-g -S mix
-14:27:57.773 [info]  Accepting connections on port 4040
 
 # start the second node
 $> iex --sname h-n -S mix
-14:27:57.773 [info]  Accepting connections on port 4040
 
 # start the third node
 $> iex --sname o-u -S mix
-14:27:57.773 [info]  Accepting connections on port 4040
 
 # start the fourth node from the umbrella root to start the TCP server
 $> cd ../../
@@ -135,7 +132,7 @@ $> iex --sname v-z -S mix
 14:27:57.773 [info]  Accepting connections on port 4040
 ```
 
-Running the project in a single node:
+Running the project in a single node, from the umbrella root, run:
 ```shell
 $> iex -S mix
 14:27:57.773 [info]  Accepting connections on port 4040
@@ -143,7 +140,8 @@ $> iex -S mix
 
 Making requests
 ```shell
-# use telent or any similar application protocol to connect over the TCP server
+# Use telent or any similar application protocol to connect over the TCP server
+# feel free to have multiple telnet sessions to play around with.
 $> telnet 127.0.0.1 4040 # or the port you have in your config.
 $> CREATE shopping
 OK
