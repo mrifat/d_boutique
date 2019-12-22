@@ -1,0 +1,27 @@
+name: CI
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: elixir:1.9.4-slim
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install Dependencies
+      run: |
+        mix local.rebar --force
+        mix local.hex --force
+        mix deps.get
+
+    - name: Lint Check
+      run: mix credo --strict
+
+    - name: Type Check
+      run: mix dialyzer --format short
+
+    - name: Run Tests
+      run: mix test
