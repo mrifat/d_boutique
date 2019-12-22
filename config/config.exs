@@ -19,4 +19,5 @@ import Config
 
 config :boutique,
   cluster_id: "command-center",
-  port: "4040"
+  port: "4040",
+  routing_table: [{?a..?z, node()}]

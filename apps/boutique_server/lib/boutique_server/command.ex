@@ -58,12 +58,16 @@ defmodule BoutiqueServer.Command do
   @doc """
   Runs the given command.
   """
-  @spec run({atom(), String.t()}) ::
-          {:ok, String.t()} | {:error, :not_found}
+  @spec run(
+          {:create, String.t()}
+          | {:delete, String.t(), String.t()}
+          | {:get, String.t(), String.t()}
+          | {:put, String.t(), String.t(), binary() | number()}
+        ) :: {:error, :not_found} | {:ok, String.t()}
   def run(command)
 
   def run({:create, bucket}) do
-    Registry.create(Registry, bucket)
+    Registry.create(Boutique.Registry, bucket)
     {:ok, "OK\r\n"}
   end
 
@@ -91,7 +95,7 @@ defmodule BoutiqueServer.Command do
   @spec lookup(String.t(), (pid() -> {:ok, String.t()})) ::
           {:ok, String.t()} | {:error, :not_found}
   defp lookup(bucket, callback) do
-    case Registry.lookup(Registry, bucket) do
+    case Router.route(bucket, Registry, :lookup, [Registry, bucket]) do
       {:ok, pid} -> callback.(pid)
       _ -> {:error, :not_found}
     end

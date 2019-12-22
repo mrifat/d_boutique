@@ -4,6 +4,21 @@ defmodule BoutiqueServer.CommandTest do
 
   @moduletag :distributed
 
+  setup_all do
+    current = Application.get_env(:boutique, :routing_table)
+
+    cluster_id = Application.get_env(:boutique, :cluster_id)
+
+    Application.put_env(:boutique, :routing_table, [
+      {?o..?u, :"h-n@#{cluster_id}"},
+      {?v..?z, :"v-z@#{cluster_id}"}
+    ])
+
+    on_exit(fn ->
+      Application.put_env(:boutique, :routing_table, current)
+    end)
+  end
+
   setup context do
     _registry = start_supervised!({Boutique.Registry, name: context.test})
     :ok

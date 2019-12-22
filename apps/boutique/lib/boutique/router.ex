@@ -7,7 +7,7 @@ defmodule Boutique.Router do
   Each dispatch occurs by a supervised process in an
   asynchronous manner on distributed nodes optimizing for faster look-ups.
 
-  To find nodes in the cluster we have a lookup table that uses
+  To find nodes in the cluster we have a routing table that uses
   the first byte of `bucket` names to find the `node`
   responsible for doing the data store lookup and retrieve the
   value.
@@ -43,7 +43,7 @@ defmodule Boutique.Router do
   # Gets the node to route the request to
   @spec get_route(byte()) :: {any(), String.t()} | nil
   defp get_route(first_byte) do
-    lookup_table()
+    routing_table()
     |> Enum.find(fn {enum, _node} ->
       first_byte in enum
     end)
@@ -52,21 +52,11 @@ defmodule Boutique.Router do
   @spec no_entry_error(String.t()) :: none()
   defp no_entry_error(bucket) do
     raise "could not find bucket with name #{inspect(bucket)} " <>
-            "in table #{inspect(lookup_table())}"
+            "in table #{inspect(routing_table())}"
   end
 
-  @spec lookup_table() :: [{%Range{}, atom()}, ...]
-  defp lookup_table do
-    [
-      {?a..?g, :"a-g@#{cluster_id()}"},
-      {?h..?n, :"h-n@#{cluster_id()}"},
-      {?o..?u, :"o-u@#{cluster_id()}"},
-      {?v..?z, :"v-z@#{cluster_id()}"}
-    ]
-  end
-
-  @spec cluster_id() :: String.t()
-  defp cluster_id do
-    Application.get_env(:boutique, :cluster_id)
+  # @spec routing_table() :: [{%Range{}, atom()}, ...]
+  defp routing_table do
+    Application.fetch_env!(:boutique, :routing_table)
   end
 end

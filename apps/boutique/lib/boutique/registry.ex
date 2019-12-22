@@ -32,7 +32,7 @@ defmodule Boutique.Registry do
   @doc """
   Ensures there is a `bucket` associated with the given `name` in `bucket`.
   """
-  @spec create(pid(), String.t()) :: any()
+  @spec create(pid() | term(), String.t()) :: any()
   def create(bucket, name) do
     GenServer.call(bucket, {:create, name})
   end
