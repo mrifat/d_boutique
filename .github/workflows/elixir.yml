@@ -12,13 +12,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - uses: actions/cache@v1
-      id: cache
-      with:
-        path: deps
-        key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-        restore-keys: |
-          ${{ runner.os }}-mix-
+    # - uses: actions/cache@v1
+    #   id: cache
+    #   with:
+    #     path: deps
+    #     key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-mix-
 
     - name: Install Dependencies
       if: steps.cache.outputs.cache-hit != 'true'
